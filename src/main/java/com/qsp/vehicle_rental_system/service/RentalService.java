@@ -9,6 +9,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.qsp.vehicle_rental_system.dto.RentalRequest;
+import com.qsp.vehicle_rental_system.dto.RentalResponse;
+import com.qsp.vehicle_rental_system.dto.VehicleResponse;
 import com.qsp.vehicle_rental_system.entity.Customer;
 import com.qsp.vehicle_rental_system.entity.Rental;
 import com.qsp.vehicle_rental_system.entity.Vehicle;
@@ -39,8 +41,33 @@ public class RentalService {
         this.vehicleRepository = vehicleRepository;
     }
     
+    // Helper Method
+    private RentalResponse convertToRentalResponse(Rental rental) {
+
+        RentalResponse response = new RentalResponse();
+
+        response.setRid(rental.getRid());
+        response.setStartDate(rental.getStartDate());
+        response.setEndDate(rental.getEndDate());
+        response.setTotalAmount(rental.getTotalAmount());
+
+        VehicleResponse vehicleResponse = new VehicleResponse();
+
+        vehicleResponse.setVid(rental.getVehicle().getVid());
+        vehicleResponse.setVname(rental.getVehicle().getVname());
+        vehicleResponse.setVehicleNumber(rental.getVehicle().getVehicleNumber());
+
+        response.setVehicle(vehicleResponse);
+
+        return response;
+    }
+    
     @Transactional
-    public Rental rentVehicleService(RentalRequest rentalRequest) {
+    public RentalResponse  rentVehicleService(RentalRequest rentalRequest) {
+    	
+    	if (rentalRequest.getStartDate().isBefore(LocalDate.now())) {
+    	    throw new IllegalArgumentException("Rental start date cannot be in the past.");
+    	}
 
         // 1. Find Customer
         Customer customer = customerRepository
@@ -85,11 +112,13 @@ public class RentalService {
         vehicleRepository.save(vehicle);
 
         // 7. Save rental
-        return rentalRepository.save(rental);
+        Rental newRental = rentalRepository.save(rental);
+
+        return convertToRentalResponse(newRental);
     }
     
     @Transactional
-    public Rental returnVehicleService(int rentalId) {
+    public RentalResponse returnVehicleService(int rentalId) {
 
         // Find rental
         Rental rental = rentalRepository.findById(rentalId)
@@ -134,20 +163,29 @@ public class RentalService {
         vehicleRepository.save(vehicle);
 
         // Save rental
-        return rentalRepository.save(rental);
+        rentalRepository.save(rental);
+
+        return convertToRentalResponse(rental);
     }
     
-    public List<Rental> getAllRentalsService() {
-        return rentalRepository.findAll();
+    public List<RentalResponse> getAllRentalsService() {
+
+        List<Rental> rentals = rentalRepository.findAll();
+
+        return rentals.stream()
+                .map(this::convertToRentalResponse)
+                .toList();
     }
     
-    public Rental getRentalByIdService(int id) {
+    public RentalResponse getRentalByIdService(int id) {
 
         Optional<Rental> optionalRental =
                 rentalRepository.findById(id);
 
         if (optionalRental.isPresent()) {
-            return optionalRental.get();
+        	Rental rental = optionalRental.get();
+
+            return convertToRentalResponse(rental);
         }
 
         throw new RentalNotFoundException(

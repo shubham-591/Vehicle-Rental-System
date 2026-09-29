@@ -9,6 +9,8 @@ import java.time.LocalDateTime;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 @Entity
 @Table(name = "users")
 public class Users {
@@ -38,6 +40,7 @@ public class Users {
     
     @OneToOne
     @JoinColumn(name = "customer_id")
+    @JsonManagedReference
     private Customer customer;
     
     @CreationTimestamp

@@ -2,9 +2,11 @@ package com.qsp.vehicle_rental_system.service;
 
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.qsp.vehicle_rental_system.dto.LoginRequest;
 import com.qsp.vehicle_rental_system.dto.RegisterRequest;
+import com.qsp.vehicle_rental_system.dto.UserResponse;
 import com.qsp.vehicle_rental_system.entity.Role;
 import com.qsp.vehicle_rental_system.entity.Users;
 import com.qsp.vehicle_rental_system.entity.Customer;
@@ -29,7 +31,8 @@ public class UsersService {
         this.jwtService = jwtService;
     }
 
-    public Users registerUserService(RegisterRequest request) {
+    @Transactional
+    public UserResponse  registerUserService(RegisterRequest request) {
 
     	// Create User
         Users user = new Users();
@@ -58,8 +61,16 @@ public class UsersService {
 
         // Save User
         user = userRepository.save(user);
+        
+        UserResponse response = new UserResponse();
 
-        return user;
+        response.setUid(user.getUid());
+        response.setName(user.getName());
+        response.setEmail(user.getEmail());
+        response.setRole(user.getRole());
+        response.setCustomerId(customer.getCid());
+
+        return response;
     }
     
     public String loginUser(LoginRequest request) {

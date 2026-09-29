@@ -6,6 +6,7 @@ import java.util.List;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import jakarta.persistence.Column;
@@ -77,6 +78,7 @@ public class Customer {
 	private List<Rental> rentals;
 	
 	@OneToOne(mappedBy = "customer")
+	@JsonBackReference
 	private Users user;
 	
 	public List<Rental> getRentals() {

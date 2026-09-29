@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.qsp.vehicle_rental_system.dto.LoginRequest;
 import com.qsp.vehicle_rental_system.dto.RegisterRequest;
+import com.qsp.vehicle_rental_system.dto.UserResponse;
 import com.qsp.vehicle_rental_system.entity.Users;
 import com.qsp.vehicle_rental_system.service.UsersService;
 
@@ -25,14 +26,14 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<Users> registerUser(
+    public ResponseEntity<UserResponse> registerUser(
             @Valid @RequestBody RegisterRequest request) {
 
-        Users user = userService.registerUserService(request);
+    	UserResponse response = userService.registerUserService(request);
 
         return ResponseEntity
                 .status(HttpStatus.CREATED)
-                .body(user);
+                .body(response);
     }
     
     @PostMapping("/login")

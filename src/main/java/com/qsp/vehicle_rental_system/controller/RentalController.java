@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.qsp.vehicle_rental_system.dto.RentalRequest;
+import com.qsp.vehicle_rental_system.dto.RentalResponse;
 import com.qsp.vehicle_rental_system.entity.Rental;
 import com.qsp.vehicle_rental_system.service.RentalService;
 
@@ -30,43 +31,43 @@ public class RentalController {
     }
 
     @PostMapping("/rentals")
-    public ResponseEntity<Rental> rentVehicle(
+    public ResponseEntity<RentalResponse> rentVehicle(
             @Valid @RequestBody RentalRequest rentalRequest) {
 
-        Rental rental =
+    	RentalResponse response =
                 rentalService.rentVehicleService(rentalRequest);
 
         return ResponseEntity
                 .status(HttpStatus.CREATED)
-                .body(rental);
+                .body(response);
     }
     
     @PutMapping("/rentals/{id}/return")
-    public ResponseEntity<Rental> returnVehicle(
+    public ResponseEntity<RentalResponse> returnVehicle(
             @PathVariable int id) {
 
-        Rental rental =
+    	RentalResponse response =
                 rentalService.returnVehicleService(id);
 
-        return ResponseEntity.ok(rental);
+        return ResponseEntity.ok(response);
     }
     
     @GetMapping("/rentals")
-    public ResponseEntity<List<Rental>> getAllRentals() {
+    public ResponseEntity<List<RentalResponse>> getAllRentals() {
 
-        List<Rental> rentals =
+    	List<RentalResponse> response =
                 rentalService.getAllRentalsService();
 
-        return ResponseEntity.ok(rentals);
+        return ResponseEntity.ok(response);
     }
     
     @GetMapping("/rentals/{id}")
-    public ResponseEntity<Rental> getRentalById(
+    public ResponseEntity<RentalResponse> getRentalById(
             @PathVariable int id) {
 
-        Rental rental =
+    	RentalResponse response =
                 rentalService.getRentalByIdService(id);
 
-        return ResponseEntity.ok(rental);
+        return ResponseEntity.ok(response);
     }
 }

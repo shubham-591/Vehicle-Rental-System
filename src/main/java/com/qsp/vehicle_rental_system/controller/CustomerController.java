@@ -28,11 +28,11 @@ public class CustomerController {
 	}
 
 
-	@PostMapping("/customers")
-	public ResponseEntity<Customer> saveCustomer(@Valid @RequestBody Customer c) {
-		Customer cust = customerService.saveCustomerService(c);
-		return ResponseEntity.status(HttpStatus.CREATED).body(cust);
-	}
+//	@PostMapping("/customers")
+//	public ResponseEntity<Customer> saveCustomer(@Valid @RequestBody Customer c) {
+//		Customer cust = customerService.saveCustomerService(c);
+//		return ResponseEntity.status(HttpStatus.CREATED).body(cust);
+//	}
 	
 	@GetMapping("/customers")
     public ResponseEntity<List<Customer>> getAllCustomers() {
