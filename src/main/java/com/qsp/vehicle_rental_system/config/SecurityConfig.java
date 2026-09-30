@@ -42,7 +42,7 @@ public class SecurityConfig {
                     
                 // Rental APIs
                 .requestMatchers(HttpMethod.POST, "/rentals")
-                    .hasAnyRole("CUSTOMER", "ADMIN")
+                    .hasAnyRole("CUSTOMER")
 
                 .requestMatchers(HttpMethod.GET, "/rentals")
                     .hasAnyRole("ADMIN", "CUSTOMER")

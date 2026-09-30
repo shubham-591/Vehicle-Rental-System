@@ -9,6 +9,7 @@ import com.qsp.vehicle_rental_system.dto.RegisterRequest;
 import com.qsp.vehicle_rental_system.dto.UserResponse;
 import com.qsp.vehicle_rental_system.entity.Role;
 import com.qsp.vehicle_rental_system.entity.Users;
+import com.qsp.vehicle_rental_system.exception.InvalidCredentialsException;
 import com.qsp.vehicle_rental_system.entity.Customer;
 import com.qsp.vehicle_rental_system.repository.CustomerRepository;
 import com.qsp.vehicle_rental_system.repository.UsersRepository;
@@ -76,13 +77,13 @@ public class UsersService {
     public String loginUser(LoginRequest request) {
 
         Users user = userRepository.findByEmail(request.getEmail())
-                .orElseThrow(() -> new RuntimeException("Invalid email or password"));
+                .orElseThrow(() -> new InvalidCredentialsException("Invalid email or password"));
 
         if (!passwordEncoder.matches(
                 request.getPassword(),
                 user.getPassword())) {
 
-            throw new RuntimeException("Invalid email or password");
+            throw new InvalidCredentialsException("Invalid email or password");
         }
 
         return jwtService.generateToken(user);

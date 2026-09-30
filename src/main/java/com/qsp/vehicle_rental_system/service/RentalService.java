@@ -5,6 +5,10 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -13,14 +17,19 @@ import com.qsp.vehicle_rental_system.dto.RentalResponse;
 import com.qsp.vehicle_rental_system.dto.VehicleResponse;
 import com.qsp.vehicle_rental_system.entity.Customer;
 import com.qsp.vehicle_rental_system.entity.Rental;
+import com.qsp.vehicle_rental_system.entity.Role;
+import com.qsp.vehicle_rental_system.entity.Users;
 import com.qsp.vehicle_rental_system.entity.Vehicle;
 import com.qsp.vehicle_rental_system.exception.CustomerNotFoundException;
+import com.qsp.vehicle_rental_system.exception.CustomerProfileNotFoundException;
 import com.qsp.vehicle_rental_system.exception.RentalAlreadyReturnedException;
 import com.qsp.vehicle_rental_system.exception.RentalNotFoundException;
+import com.qsp.vehicle_rental_system.exception.UserNotFoundException;
 import com.qsp.vehicle_rental_system.exception.VehicleNotAvailableException;
 import com.qsp.vehicle_rental_system.exception.VehicleNotFoundException;
 import com.qsp.vehicle_rental_system.repository.CustomerRepository;
 import com.qsp.vehicle_rental_system.repository.RentalRepository;
+import com.qsp.vehicle_rental_system.repository.UsersRepository;
 import com.qsp.vehicle_rental_system.repository.VehicleRepository;
 
 @Service
@@ -29,16 +38,19 @@ public class RentalService {
     RentalRepository rentalRepository;
     CustomerRepository customerRepository;
     VehicleRepository vehicleRepository;
+    UsersRepository userRepository;
 
     @Autowired
     public RentalService(
             RentalRepository rentalRepository,
             CustomerRepository customerRepository,
-            VehicleRepository vehicleRepository) {
+            VehicleRepository vehicleRepository,
+            UsersRepository userRepository) {
 
         this.rentalRepository = rentalRepository;
         this.customerRepository = customerRepository;
         this.vehicleRepository = vehicleRepository;
+        this.userRepository = userRepository;
     }
     
     // Helper Method
@@ -69,15 +81,15 @@ public class RentalService {
     	    throw new IllegalArgumentException("Rental start date cannot be in the past.");
     	}
 
-        // 1. Find Customer
-        Customer customer = customerRepository
-                .findById(rentalRequest.getCustomerId())
-                .orElseThrow(() ->
-                    new CustomerNotFoundException(
-                        "Customer not found with ID: "
-                        + rentalRequest.getCustomerId()
-                    )
-                );
+ 
+    	Users user = getLoggedInUser();
+
+    	// Get customer's profile
+    	Customer customer = user.getCustomer();
+
+    	if (customer == null) {
+    	    throw new CustomerProfileNotFoundException("Customer profile not found");
+    	}
 
         // 2. Find Vehicle
         Vehicle vehicle = vehicleRepository
@@ -127,6 +139,20 @@ public class RentalService {
                         "Rental not found with ID: " + rentalId
                     )
                 );
+        
+        Users user = getLoggedInUser();
+        
+        // Check rental ownership for CUSTOMER
+        if (user.getRole() == Role.CUSTOMER) {
+
+            if (user.getCustomer() == null ||
+                rental.getCustomer().getCid() != user.getCustomer().getCid()) {
+
+                throw new AccessDeniedException(
+                        "You are not allowed to return this rental"
+                );
+            }
+        }
 
         // Check whether already returned
         if (rental.getEndDate() != null) {
@@ -170,7 +196,18 @@ public class RentalService {
     
     public List<RentalResponse> getAllRentalsService() {
 
-        List<Rental> rentals = rentalRepository.findAll();
+    	Users user = getLoggedInUser();
+
+        List<Rental> rentals;
+
+        if (user.getRole() == Role.ADMIN) {
+            // ADMIN → all rentals
+            rentals = rentalRepository.findAll();
+
+        } else {
+            // CUSTOMER → only their rentals
+            rentals = rentalRepository.findByCustomer(user.getCustomer());
+        }
 
         return rentals.stream()
                 .map(this::convertToRentalResponse)
@@ -179,17 +216,48 @@ public class RentalService {
     
     public RentalResponse getRentalByIdService(int id) {
 
-        Optional<Rental> optionalRental =
-                rentalRepository.findById(id);
+        Rental rental = rentalRepository.findById(id)
+                .orElseThrow(() ->
+                        new RentalNotFoundException(
+                                "Rental not found with ID: " + id
+                        )
+                );
 
-        if (optionalRental.isPresent()) {
-        	Rental rental = optionalRental.get();
+        Users user = getLoggedInUser();
 
-            return convertToRentalResponse(rental);
+        // CUSTOMER can view only their own rental
+        if (user.getRole() == Role.CUSTOMER) {
+
+            if (user.getCustomer() == null ||
+                rental.getCustomer().getCid() != user.getCustomer().getCid()) {
+
+                throw new AccessDeniedException(
+                        "You are not allowed to view this rental"
+                );
+            }
         }
 
-        throw new RentalNotFoundException(
-                "Rental not found with ID: " + id
-        );
+        return convertToRentalResponse(rental);
+    }
+    
+    // Helper Method to get logged in user
+    private Users getLoggedInUser() {
+    	
+    	// Get currently logged-in user
+//      Authentication authentication =
+//             SecurityContextHolder.getContext().getAuthentication();
+      
+	      // Above one is the short way of writing the below code.
+	      SecurityContext context =
+	              SecurityContextHolder.getContext();
+	
+	      Authentication authentication =
+	              context.getAuthentication();
+	
+	      String email = authentication.getName();
+
+	      return userRepository.findByEmail(email)
+                .orElseThrow(() ->
+                        new UserNotFoundException("User not found"));
     }
 }

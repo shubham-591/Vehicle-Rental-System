@@ -6,22 +6,12 @@ import jakarta.validation.constraints.NotNull;
 
 public class RentalRequest {
 
-    @NotNull(message = "Customer ID cannot be null")
-    private Integer customerId;
 
     @NotNull(message = "Vehicle ID cannot be null")
     private Integer vehicleId;
 
     @NotNull(message = "Start date cannot be null")
     private LocalDate startDate;
-
-    public Integer getCustomerId() {
-        return customerId;
-    }
-
-    public void setCustomerId(Integer customerId) {
-        this.customerId = customerId;
-    }
 
     public Integer getVehicleId() {
         return vehicleId;
