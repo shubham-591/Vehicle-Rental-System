@@ -9,4 +9,5 @@ public interface CustomerRepository extends JpaRepository<Customer, Integer>{
 	/*
 	 * Now all the inbuilt methods will be availabe to perform the CRUD operations
 	 */
+	
 }

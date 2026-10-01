@@ -81,6 +81,15 @@ public class GlobalExceptionHandler {
 	            .body(response);
 	}
 	
+	@ExceptionHandler(CustomerHasActiveRentalsException.class)
+	public ResponseEntity<String> handleCustomerHasActiveRentalsException(
+	        CustomerHasActiveRentalsException ex) {
+
+	    return ResponseEntity
+	            .status(HttpStatus.CONFLICT)
+	            .body(ex.getMessage());
+	}
+	
 	@ExceptionHandler(RentalAlreadyReturnedException.class)
 	public ResponseEntity<Map<String, Object>> handleRentalAlreadyReturned(
 	        RentalAlreadyReturnedException exception) {

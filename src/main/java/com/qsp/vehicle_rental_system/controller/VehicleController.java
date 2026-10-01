@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.qsp.vehicle_rental_system.dto.VehicleRequest;
+import com.qsp.vehicle_rental_system.dto.VehicleResponse;
 import com.qsp.vehicle_rental_system.entity.Vehicle;
 import com.qsp.vehicle_rental_system.service.VehicleService;
 
@@ -29,9 +31,9 @@ public class VehicleController {
 
     @PostMapping("/vehicles")
     public ResponseEntity<Vehicle> saveVehicle(
-            @Valid @RequestBody Vehicle v) {
+    		@Valid @RequestBody VehicleRequest request) {
 
-        Vehicle vehicle = vehicleService.saveVehicleService(v);
+        Vehicle vehicle = vehicleService.saveVehicleService(request);
 
         return ResponseEntity
                 .status(HttpStatus.CREATED)
@@ -39,19 +41,19 @@ public class VehicleController {
     }
 
     @GetMapping("/vehicles")
-    public ResponseEntity<List<Vehicle>> getAllVehicles() {
+    public ResponseEntity<List<VehicleResponse>> getAllVehicles() {
 
-        List<Vehicle> vehicles =
+    	 List<VehicleResponse> vehicles =
                 vehicleService.getAllVehiclesService();
 
         return ResponseEntity.ok(vehicles);
     }
 
     @GetMapping("/vehicles/{id}")
-    public ResponseEntity<Vehicle> getVehicleById(
+    public ResponseEntity<VehicleResponse> getVehicleById(
             @PathVariable int id) {
 
-        Vehicle vehicle =
+    	VehicleResponse vehicle =
                 vehicleService.getVehicleByIdService(id);
 
         return ResponseEntity.ok(vehicle);

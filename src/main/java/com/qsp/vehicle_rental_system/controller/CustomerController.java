@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.qsp.vehicle_rental_system.dto.CustomerResponse;
 import com.qsp.vehicle_rental_system.entity.Customer;
 import com.qsp.vehicle_rental_system.service.CustomerService;
 
@@ -35,16 +36,22 @@ public class CustomerController {
 //	}
 	
 	@GetMapping("/customers")
-    public ResponseEntity<List<Customer>> getAllCustomers() {
-		List<Customer> customers = customerService.getAllCustomersService();
-        return ResponseEntity.ok(customers);
+	public ResponseEntity<List<CustomerResponse>> getAllCustomers() {
 
-    }
+	    List<CustomerResponse> customers =
+	            customerService.getAllCustomersService();
+
+	    return ResponseEntity.ok(customers);
+	}
 
     @GetMapping("/customers/{id}")
-    public ResponseEntity<Customer> getCustomerById(@PathVariable int id) {
-    	Customer c = customerService.getCustomerByIdService(id);
-        return ResponseEntity.ok(c);
+    public ResponseEntity<CustomerResponse> getCustomerById(
+            @PathVariable int id) {
+
+        CustomerResponse customer =
+                customerService.getCustomerByIdService(id);
+
+        return ResponseEntity.ok(customer);
     }
 
     @DeleteMapping("/customers/{id}")

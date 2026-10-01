@@ -81,8 +81,11 @@ public class Vehicle {
 
     @Column(nullable = false)
     private boolean isAvailable = true;
+    
+    @Column(nullable = false)
+    private boolean active = true;
 
-    @CreationTimestamp
+	@CreationTimestamp
     private LocalDateTime createdAt;
 
     @UpdateTimestamp
@@ -147,4 +150,21 @@ public class Vehicle {
     public void setAvailable(boolean isAvailable) {
         this.isAvailable = isAvailable;
     }
+    
+    public boolean isActive() {
+		return active;
+	}
+
+	public void setActive(boolean active) {
+		this.active = active;
+	}
+
+	public LocalDateTime getCreatedAt() {
+		return createdAt;
+	}
+
+	public LocalDateTime getUpdatedAt() {
+		return updatedAt;
+	}
+	
 }

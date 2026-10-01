@@ -96,4 +96,12 @@ public class Users {
 	public void setCustomer(Customer customer) {
 	    this.customer = customer;
 	}
+
+	public LocalDateTime getCreatedAt() {
+		return createdAt;
+	}
+
+	public LocalDateTime getUpdatedAt() {
+		return updatedAt;
+	}
 }

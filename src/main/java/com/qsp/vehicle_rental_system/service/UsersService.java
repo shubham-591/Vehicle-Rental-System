@@ -1,5 +1,6 @@
 package com.qsp.vehicle_rental_system.service;
 
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -84,6 +85,11 @@ public class UsersService {
                 user.getPassword())) {
 
             throw new InvalidCredentialsException("Invalid email or password");
+        }
+        
+        // Check if customer account is active
+        if (user.getCustomer() != null && !user.getCustomer().isActive()) {
+            throw new AccessDeniedException("Customer account is inactive");
         }
 
         return jwtService.generateToken(user);

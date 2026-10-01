@@ -67,6 +67,9 @@ public class Customer {
 	    )
 	private String email;
 	
+	@Column(nullable = false)
+	private boolean active = true;
+	
 	@CreationTimestamp
 	private LocalDateTime createdAt;
 	
@@ -118,6 +121,20 @@ public class Customer {
 
 	public void setUser(Users user) {
 	    this.user = user;
+	}
+	public LocalDateTime getCreatedAt() {
+		return createdAt;
+	}
+	
+	public LocalDateTime getUpdatedAt() {
+		return updatedAt;
+	}
+	
+	public boolean isActive() {
+		return active;
+	}
+	public void setActive(boolean active) {
+		this.active = active;
 	}
 	
 }
