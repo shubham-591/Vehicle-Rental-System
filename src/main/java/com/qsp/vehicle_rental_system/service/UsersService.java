@@ -1,7 +1,7 @@
 package com.qsp.vehicle_rental_system.service;
 
 import org.springframework.security.access.AccessDeniedException;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,15 +22,23 @@ public class UsersService {
     
     private final JwtService jwtService;
     
+    private final PasswordEncoder passwordEncoder;
+    
     CustomerRepository customerRepository;
 
-    BCryptPasswordEncoder passwordEncoder =
-            new BCryptPasswordEncoder();
+//    BCryptPasswordEncoder passwordEncoder =
+//            new BCryptPasswordEncoder();
 
-    public UsersService(UsersRepository userRepository, CustomerRepository customerRepository, JwtService jwtService) {
+    public UsersService(
+            UsersRepository userRepository,
+            CustomerRepository customerRepository,
+            JwtService jwtService,
+            PasswordEncoder passwordEncoder) {
+
         this.userRepository = userRepository;
         this.customerRepository = customerRepository;
         this.jwtService = jwtService;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Transactional

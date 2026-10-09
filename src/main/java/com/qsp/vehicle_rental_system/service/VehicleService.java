@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import com.qsp.vehicle_rental_system.dto.VehicleRequest;
 import com.qsp.vehicle_rental_system.dto.VehicleResponse;
+import com.qsp.vehicle_rental_system.dto.VehicleUpdateRequest;
 import com.qsp.vehicle_rental_system.entity.Role;
 import com.qsp.vehicle_rental_system.entity.Users;
 import com.qsp.vehicle_rental_system.entity.Vehicle;
@@ -102,6 +103,38 @@ public class VehicleService {
         vehicle.setActive(false);
 
         vehicleRepository.save(vehicle);
+    }
+    
+    public VehicleResponse updateVehicleService(int id, VehicleUpdateRequest request) {
+
+        Vehicle vehicle = vehicleRepository.findById(id)
+                .orElseThrow(() ->
+                    new VehicleNotFoundException(
+                        "Vehicle not found with ID: " + id
+                    )
+                );
+        
+        if (!vehicle.isActive()) {
+            throw new VehicleNotFoundException(
+                "Vehicle not found with ID: " + id
+            );
+        }
+
+        if (request.getVname() != null) {
+            vehicle.setVname(request.getVname());
+        }
+
+        if (request.getRentPerDay() != null) {
+            vehicle.setRentPerDay(request.getRentPerDay());
+        }
+
+        if (request.getCompany() != null) {
+            vehicle.setCompany(request.getCompany());
+        }
+
+        Vehicle updatedVehicle = vehicleRepository.save(vehicle);
+
+        return convertToVehicleResponse(updatedVehicle);
     }
     
     private VehicleResponse convertToVehicleResponse(Vehicle vehicle) {

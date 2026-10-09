@@ -8,6 +8,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -37,6 +38,9 @@ public class Rental {
 
     private LocalDate endDate;
 
+    @Column(nullable = false)
+    private double rentPerDay;
+    
     private double totalAmount;
 
     @CreationTimestamp
@@ -111,4 +115,13 @@ public class Rental {
     public LocalDateTime getUpdatedAt() {
         return updatedAt;
     }
+
+	public double getRentPerDay() {
+		return rentPerDay;
+	}
+
+	public void setRentPerDay(double rentPerDay) {
+		this.rentPerDay = rentPerDay;
+	}
+    
 }

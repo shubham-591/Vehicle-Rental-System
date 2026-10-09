@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.qsp.vehicle_rental_system.dto.LoginRequest;
 import com.qsp.vehicle_rental_system.dto.RegisterRequest;
 import com.qsp.vehicle_rental_system.dto.UserResponse;
-import com.qsp.vehicle_rental_system.entity.Users;
 import com.qsp.vehicle_rental_system.service.UsersService;
 
 import jakarta.validation.Valid;

@@ -25,7 +25,6 @@ public class VehicleRequest {
     private String company;
 
 
-    // Getters and Setters
 
     public String getVname() {
         return vname;

@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.qsp.vehicle_rental_system.dto.RentalRequest;
 import com.qsp.vehicle_rental_system.dto.RentalResponse;
-import com.qsp.vehicle_rental_system.entity.Rental;
 import com.qsp.vehicle_rental_system.service.RentalService;
 
 import jakarta.validation.Valid;

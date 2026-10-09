@@ -21,9 +21,7 @@ import com.qsp.vehicle_rental_system.exception.RentalAlreadyReturnedException;
 import com.qsp.vehicle_rental_system.exception.RentalNotFoundException;
 import com.qsp.vehicle_rental_system.exception.VehicleNotAvailableException;
 import com.qsp.vehicle_rental_system.exception.VehicleNotFoundException;
-import com.qsp.vehicle_rental_system.repository.CustomerRepository;
 import com.qsp.vehicle_rental_system.repository.RentalRepository;
-import com.qsp.vehicle_rental_system.repository.UsersRepository;
 import com.qsp.vehicle_rental_system.repository.VehicleRepository;
 
 @Service
@@ -124,6 +122,7 @@ public class RentalService {
         rental.setCustomer(customer);
         rental.setVehicle(vehicle);
         rental.setStartDate(rentalRequest.getStartDate());
+        rental.setRentPerDay(vehicle.getRentPerDay());
 
         // 5. Vehicle is now rented
         vehicle.setAvailable(false);
@@ -168,6 +167,13 @@ public class RentalService {
                 "Rental with ID " + rentalId + " has already been returned"
             );
         }
+        
+     // Check whether rental has started
+        if (rental.getStartDate().isAfter(LocalDate.now())) {
+            throw new IllegalArgumentException(
+                "Rental cannot be returned before its start date"
+            );
+        }
 
         // Set return date
         LocalDate endDate = LocalDate.now();
@@ -183,7 +189,7 @@ public class RentalService {
         );
 
         // Calculate total amount
-        double rentPerDay = rental.getVehicle().getRentPerDay();
+        double rentPerDay = rental.getRentPerDay();
 
         double totalAmount = rentalDays * rentPerDay;
 
@@ -248,24 +254,4 @@ public class RentalService {
         return convertToRentalResponse(rental);
     }
     
-    // Helper Method to get logged in user
-//    private Users getLoggedInUser() {
-//    	
-//    	// Get currently logged-in user
-////      Authentication authentication =
-////             SecurityContextHolder.getContext().getAuthentication();
-//      
-//	      // Above one is the short way of writing the below code.
-//	      SecurityContext context =
-//	              SecurityContextHolder.getContext();
-//	
-//	      Authentication authentication =
-//	              context.getAuthentication();
-//	
-//	      String email = authentication.getName();
-//
-//	      return userRepository.findByEmail(email)
-//                .orElseThrow(() ->
-//                        new UserNotFoundException("User not found"));
-//    }
 }
